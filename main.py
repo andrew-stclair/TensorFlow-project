@@ -1,9 +1,4 @@
-# For running inference on the TF-Hub module.
-import tempfile
-
-# For downloading the image.
 import matplotlib.pyplot as plt
-# For drawing onto the image.
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -22,17 +17,18 @@ print(tf.__version__)
 print("The following GPU devices are available: %s" % tf.test.gpu_device_name())
 
 
-def display_image(image):
+def display_image(image, name="image"):
+    filename = "%s%s%s" % ("images/tf", name, ".jpg")
     print("Displaying image")
     fig = plt.figure(figsize=(20, 15))
     plt.grid(False)
     plt.imshow(image)
-    plt.show()
+    plt.savefig(filename, bbox_inches='tight')
 
 
-def download_and_resize_image(url, new_width=256, new_height=256,
+def download_and_resize_image(url, new_width=256, new_height=256, name="image",
                               display=False):
-    _, filename = tempfile.mkstemp(suffix=".jpg")
+    filename = "%s%s%s" % ("images/", name, ".jpg")
     response = urlopen(url)
     image_data = response.read()
     image_data = BytesIO(image_data)
@@ -121,10 +117,6 @@ def draw_boxes(image, boxes, class_names, scores, max_boxes=10, min_score=0.1):
     return image
 
 
-# By Heiko Gorski, Source: https://commons.wikimedia.org/wiki/File:Naxos_Taverna.jpg
-image_url = "https://upload.wikimedia.org/wikipedia/commons/6/60/Naxos_Taverna.jpg"
-downloaded_image_path = download_and_resize_image(image_url, 718, 480)
-
 module_handle = "https://tfhub.dev/google/faster_rcnn/openimages_v4/inception_resnet_v2/1"
 
 detector = hub.load(module_handle).signatures['default']
@@ -136,7 +128,7 @@ def load_img(path):
     return img
 
 
-def run_detector(detector, path):
+def run_detector(detector, path, name="image"):
     img = load_img(path)
 
     converted_img = tf.image.convert_image_dtype(img, tf.float32)[tf.newaxis, ...]
@@ -150,12 +142,12 @@ def run_detector(detector, path):
         img.numpy(), result["detection_boxes"],
         result["detection_class_entities"], result["detection_scores"])
 
-    display_image(image_with_boxes)
+    display_image(image_with_boxes, name)
 
-
-run_detector(detector, downloaded_image_path)
 
 image_urls = [
+    # By Heiko Gorski, Source: https://commons.wikimedia.org/wiki/File:Naxos_Taverna.jpg
+    "https://upload.wikimedia.org/wikipedia/commons/6/60/Naxos_Taverna.jpg",
     # Source: https://commons.wikimedia.org/wiki/File:The_Coleoptera_of_the_British_islands_(Plate_125)_(8592917784).jpg
     "https://upload.wikimedia.org/wikipedia/commons/1/1b/The_Coleoptera_of_the_British_islands_%28Plate_125%29_%288592917784%29.jpg",
     # By Américo Toledano, Source: https://commons.wikimedia.org/wiki/File:Biblioteca_Maim%C3%B3nides,_Campus_Universitario_de_Rabanales_007.jpg
@@ -165,10 +157,12 @@ image_urls = [
 ]
 
 
-def detect_img(image_url):
-    image_path = download_and_resize_image(image_url, 640, 480)
-    run_detector(detector, image_path)
+def detect_img(image_url, width=256, height=256, name="image"):
+    image_path = download_and_resize_image(image_url, width, height, name)
+    run_detector(detector, image_path, name)
 
-detect_img(image_urls[0])
-detect_img(image_urls[1])
-detect_img(image_urls[2])
+
+detect_img(image_urls[0], 718, 480, "image1")
+detect_img(image_urls[1], 640, 480, "image2")
+detect_img(image_urls[2], 640, 480, "image3")
+detect_img(image_urls[3], 640, 480, "image4")
