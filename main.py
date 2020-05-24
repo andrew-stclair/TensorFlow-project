@@ -1,24 +1,19 @@
 # For running inference on the TF-Hub module.
-import tensorflow as tf
-
-import tensorflow_hub as hub
+import tempfile
 
 # For downloading the image.
 import matplotlib.pyplot as plt
-import tempfile
-from six.moves.urllib.request import urlopen
-from six import BytesIO
-
 # For drawing onto the image.
 import numpy as np
+import tensorflow as tf
+import tensorflow_hub as hub
 from PIL import Image
 from PIL import ImageColor
 from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import ImageOps
-
-# For measuring the inference time.
-import time
+from six import BytesIO
+from six.moves.urllib.request import urlopen
 
 # Print Tensorflow version
 print(tf.__version__)
@@ -128,7 +123,7 @@ def draw_boxes(image, boxes, class_names, scores, max_boxes=10, min_score=0.1):
 
 # By Heiko Gorski, Source: https://commons.wikimedia.org/wiki/File:Naxos_Taverna.jpg
 image_url = "https://upload.wikimedia.org/wikipedia/commons/6/60/Naxos_Taverna.jpg"
-downloaded_image_path = download_and_resize_image(image_url, 1280, 856, True)
+downloaded_image_path = download_and_resize_image(image_url, 718, 480)
 
 module_handle = "https://tfhub.dev/google/faster_rcnn/openimages_v4/inception_resnet_v2/1"
 
@@ -145,14 +140,11 @@ def run_detector(detector, path):
     img = load_img(path)
 
     converted_img = tf.image.convert_image_dtype(img, tf.float32)[tf.newaxis, ...]
-    start_time = time.time()
     result = detector(converted_img)
-    end_time = time.time()
 
     result = {key: value.numpy() for key, value in result.items()}
 
     print("Found %d objects." % len(result["detection_scores"]))
-    print("Inference time: ", end_time - start_time)
 
     image_with_boxes = draw_boxes(
         img.numpy(), result["detection_boxes"],
@@ -174,11 +166,8 @@ image_urls = [
 
 
 def detect_img(image_url):
-    start_time = time.time()
     image_path = download_and_resize_image(image_url, 640, 480)
     run_detector(detector, image_path)
-    end_time = time.time()
-    print("Inference time:", start_time - end_time)
 
 detect_img(image_urls[0])
 detect_img(image_urls[1])
