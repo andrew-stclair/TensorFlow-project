@@ -2,7 +2,7 @@
 
 A project I'm working on for CSE3ETI using TensorFlow for object recognition
 
-This project is being developed in [PyCharm Community](https://www.jetbrains.com/pycharm/) and is heavily based on [This tutorial on TensorFlow Hub](https://www.tensorflow.org/hub/tutorials/object_detection)
+This project is being developed in [PyCharm Community](https://www.jetbrains.com/pycharm/) and is based on [This tutorial on TensorFlow Hub](https://www.tensorflow.org/hub/tutorials/object_detection)
 
 # Images
 
