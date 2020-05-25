@@ -23,6 +23,9 @@ def display_image(image, name="image"):
     fig = plt.figure(figsize=(20, 15))
     plt.grid(False)
     plt.imshow(image)
+    # Display image on screen
+    # plt.show()
+    # Save image to file
     plt.savefig(filename, bbox_inches='tight')
 
 
