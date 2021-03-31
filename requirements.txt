@@ -1,5 +1,5 @@
-tensorflow~=2.2.0
-tensorflow_hub~=0.8.0
+tensorflow~=*
+tensorflow_hub~=*
 matplotlib~=3.2.1
 numpy~=1.18.4
 six~=1.15.0
