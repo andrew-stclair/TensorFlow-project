@@ -3,4 +3,4 @@ tensorflow_hub~=*
 matplotlib~=3.2.1
 numpy~=1.18.4
 six~=1.15.0
-Pillow~=7.1.2
+Pillow~=8.1.1
